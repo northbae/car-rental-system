@@ -2,10 +2,10 @@ name: GitHub Classroom Workflow
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
@@ -215,7 +215,7 @@ jobs:
           sleep 60
 
       - name: Run API Tests
-        uses: matt-ball/newman-action@master
+        uses: matt-ball/newman-action@main
         with:
           collection: v3/postman/collection.json
           environment: v3/postman/environment.json
