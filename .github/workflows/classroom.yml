@@ -215,7 +215,7 @@ jobs:
           sleep 60
 
       - name: Run API Tests
-        uses: matt-ball/newman-action@main
+        uses: matt-ball/newman-action@master
         with:
           collection: v3/postman/collection.json
           environment: v3/postman/environment.json
