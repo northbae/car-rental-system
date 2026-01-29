@@ -4,12 +4,12 @@
   "values": [
     {
       "key": "serviceUrl",
-      "value": "http://95.174.89.139",
+      "value": "http://95.174.89.133",
       "enabled": true
     },
     {
       "key": "identityProviderUrl",
-      "value": "http://95.174.89.139/api/v1",
+      "value": "http://95.174.89.133/api/v1",
       "enabled": true
     },
     {
