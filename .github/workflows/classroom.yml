@@ -100,7 +100,7 @@ jobs:
           helm dependency build k8s-cluster/charts/infrastructure
           helm upgrade --install infrastructure k8s-cluster/charts/infrastructure \
             -f k8s-cluster/charts/infrastructure/values.yaml \
-            --wait --timeout 15m
+            --wait --timeout 20m
 
       - name: Debug Infra Failure
         if: always()
