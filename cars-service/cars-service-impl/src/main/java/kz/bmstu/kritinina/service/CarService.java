@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface CarService {
-    Page<CarResponse> getCars(Boolean showAll, Pageable pageable);
+    Page<CarResponse> getCars(Boolean showAll, String dateFrom, String dateTo, String carType, String city, Pageable pageable);
 
     List<CarResponse> getCars(List<UUID> carUids);
 

@@ -27,8 +27,8 @@ public class GatewayControllerImpl implements GatewayController {
     }
 
     @Override
-    public CarPage<CarDto> getAllCars(Boolean showAll, Pageable pageable) {
-        return gatewayService.getAllCars(showAll, pageable);
+    public CarPage<CarDto> getAllCars(Boolean showAll, String dateFrom, String dateTo, String carType, String city, Pageable pageable) {
+        return gatewayService.getAllCars(showAll, dateFrom, dateTo, carType, city, pageable);
     }
 
     @Override

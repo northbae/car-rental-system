@@ -33,7 +33,11 @@ public interface GatewayController {
                             schema = @Schema(implementation = ServiceError.class)) })
     })
     @GetMapping("/cars")
-    CarPage<CarDto> getAllCars(@RequestParam Boolean showAll,
+    CarPage<CarDto> getAllCars(@RequestParam(required = false) Boolean showAll,
+                               @RequestParam(required = false) String dateFrom,
+                               @RequestParam(required = false) String dateTo,
+                               @RequestParam(required = false) String carType,
+                               @RequestParam(required = false) String city,
                                @ParameterObject Pageable pageable);
 
     @ApiResponse(responseCode = "200", description = "Список аренд пользователя")

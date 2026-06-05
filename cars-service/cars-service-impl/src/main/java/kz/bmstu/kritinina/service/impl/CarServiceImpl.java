@@ -23,7 +23,7 @@ public class CarServiceImpl implements CarService {
     private final CarMapper carMapper;
 
     @Override
-    public Page<CarResponse> getCars(Boolean showAll, Pageable pageable) {
+    public Page<CarResponse> getCars(Boolean showAll, String dateFrom, String dateTo, String carType, String city, Pageable pageable) {
         Pageable adjustedPageable = PageRequest.of(
                 Math.max(0, pageable.getPageNumber() - 1),
                 pageable.getPageSize(),

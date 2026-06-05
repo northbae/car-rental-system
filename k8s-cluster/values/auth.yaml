@@ -1,0 +1,29 @@
+image:
+  repository: "lilien0/auth-service"
+
+service:
+  port: 8110
+  targetPort: 8110
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "384Mi"
+    cpu: "300m"
+
+env:
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/auth"
+  SPRING_DATASOURCE_USERNAME: "postgres"
+  SPRING_DATASOURCE_PASSWORD: "postgres"
+
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://infrastructure-keycloak:80/auth/realms/car-rental"
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://infrastructure-keycloak:80/auth/realms/car-rental/protocol/openid-connect/certs"
+
+  KEYCLOAK_SERVER_URL: "http://infrastructure-keycloak:80/auth"
+  KEYCLOAK_REALM: "car-rental"
+  KEYCLOAK_CLIENT_ID: "admin-cli"
+  KEYCLOAK_CLIENT_SECRET: "admin-secret"

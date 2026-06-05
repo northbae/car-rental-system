@@ -22,7 +22,12 @@ import java.util.UUID;
 @FeignClient(name = "car", url = "http://cars-service:8070/api/v1/cars", configuration = FeignConfig.class)
 public interface CarClient {
     @GetMapping
-    ResponseEntity<Page<CarResponse>> getCars(@RequestParam("showAll") Boolean showAll, @ParameterObject Pageable pageable);
+    ResponseEntity<Page<CarResponse>> getCars(@RequestParam(value = "showAll", required = false) Boolean showAll,
+                                              @RequestParam(value = "dateFrom", required = false) String dateFrom,
+                                              @RequestParam(value = "dateTo", required = false) String dateTo,
+                                              @RequestParam(value = "carType", required = false) String carType,
+                                              @RequestParam(value = "city", required = false) String city,
+                                              @ParameterObject Pageable pageable);
 
     @PostMapping
     ResponseEntity<List<CarResponse>> getCars(@RequestParam("carUids") Set<UUID> carUids);

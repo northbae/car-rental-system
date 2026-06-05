@@ -28,8 +28,8 @@ public class CarControllerImpl implements CarController{
     }
 
     @Override
-    public ResponseEntity<Page<CarResponse>> getCars(Boolean showAll, Pageable pageable) {
-        return ResponseEntity.ok(carService.getCars(showAll, pageable));
+    public ResponseEntity<Page<CarResponse>> getCars(Boolean showAll, String dateFrom, String dateTo, String carType, String city, Pageable pageable) {
+        return ResponseEntity.ok(carService.getCars(showAll, dateFrom, dateTo, carType, city, pageable));
     }
 
     @Override

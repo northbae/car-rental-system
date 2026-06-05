@@ -2,12 +2,12 @@ package kz.bmstu.kritinina.queue.consumer;
 
 import kz.bmstu.kritinina.client.PaymentClient;
 import kz.bmstu.kritinina.client.RentalClient;
-import kz.bmstu.kritinina.queue.config.RabbitMqConfig;
+import kz.bmstu.kritinina.queue.config.KafkaConfig;
 import kz.bmstu.kritinina.queue.message.RetryMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -16,12 +16,13 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class RetryConsumer {
-    private final RabbitTemplate rabbitTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final RentalClient rentalClient;
     private final PaymentClient paymentClient;
 
-    @RabbitListener(queues = RabbitMqConfig.RETRY_QUEUE)
+    @KafkaListener(topics = KafkaConfig.RETRY_TOPIC, groupId = "gateway-group")
     public void processRetryMessage(RetryMessage message) {
+        log.info("Received retry message: {}", message);
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
@@ -44,13 +45,14 @@ public class RetryConsumer {
             }
 
         } catch (Exception e) {
+            log.error("Failed to process retry message: {}", e.getMessage());
             message.setRetryCount(message.getRetryCount() + 1);
             message.setFailureReason(e.getMessage());
-            rabbitTemplate.convertAndSend(
-                    RabbitMqConfig.RETRY_EXCHANGE,
-                    RabbitMqConfig.RETRY_ROUTING_KEY,
-                    message
-            );
+            if (message.getRetryCount() < 5) {
+                kafkaTemplate.send(KafkaConfig.RETRY_TOPIC, message);
+            } else {
+                log.error("Max retries reached for message: {}", message);
+            }
         }
     }
 

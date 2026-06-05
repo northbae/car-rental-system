@@ -12,10 +12,10 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     alias: postgresql
 
-  - name: rabbitmq
-    version: 12.x.x
+  - name: kafka
+    version: 26.x.x
     repository: oci://registry-1.docker.io/bitnamicharts
-    alias: rabbitmq
+    alias: kafka
 
   - name: keycloak
     version: 16.x.x

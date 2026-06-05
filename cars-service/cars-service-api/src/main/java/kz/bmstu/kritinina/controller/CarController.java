@@ -25,7 +25,12 @@ public interface CarController {
 
     @ApiResponse(responseCode = "200", description = "Список доступных для бронирования автомобилей")
     @GetMapping("/cars")
-    ResponseEntity<Page<CarResponse>> getCars(@RequestParam Boolean showAll, @ParameterObject Pageable pageable);
+    ResponseEntity<Page<CarResponse>> getCars(@RequestParam(required = false) Boolean showAll,
+                                              @RequestParam(required = false) String dateFrom,
+                                              @RequestParam(required = false) String dateTo,
+                                              @RequestParam(required = false) String carType,
+                                              @RequestParam(required = false) String city,
+                                              @ParameterObject Pageable pageable);
 
     @PostMapping("/cars")
     ResponseEntity<List<CarResponse>> getListCars(@RequestParam List<UUID> carUids);

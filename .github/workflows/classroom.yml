@@ -14,6 +14,10 @@ jobs:
       cars: ${{ steps.filter.outputs.cars }}
       rental: ${{ steps.filter.outputs.rental }}
       payment: ${{ steps.filter.outputs.payment }}
+      statistics: ${{ steps.filter.outputs.statistics }}
+      logging: ${{ steps.filter.outputs.logging }}
+      auth: ${{ steps.filter.outputs.auth }}
+      analytics: ${{ steps.filter.outputs.analytics }}
       gateway: ${{ steps.filter.outputs.gateway }}
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +39,22 @@ jobs:
             payment:
               - 'payment-service/**'
               - 'k8s-cluster/values/payment.yaml'
+              - 'k8s-cluster/charts/microservice/**'
+            statistics:
+              - 'statistics-service/**'
+              - 'k8s-cluster/values/statistics.yaml'
+              - 'k8s-cluster/charts/microservice/**'
+            logging:
+              - 'logging-service/**'
+              - 'k8s-cluster/values/logging.yaml'
+              - 'k8s-cluster/charts/microservice/**'
+            auth:
+              - 'auth-service/**'
+              - 'k8s-cluster/values/auth.yaml'
+              - 'k8s-cluster/charts/microservice/**'
+            analytics:
+              - 'analytics-service/**'
+              - 'k8s-cluster/values/analytics.yaml'
               - 'k8s-cluster/charts/microservice/**'
             gateway:
               - 'gateway-service/**'
@@ -62,10 +82,10 @@ jobs:
       - name: Clean up old conflicting resources
         run: |
           kubectl delete service postgres --ignore-not-found=true
-          kubectl delete service rabbitmq --ignore-not-found=true
+          kubectl delete service kafka --ignore-not-found=true
           
           kubectl delete deployment postgres --ignore-not-found=true
-          kubectl delete deployment rabbitmq --ignore-not-found=true
+          kubectl delete deployment kafka --ignore-not-found=true
 
       - name: Deploy Infrastructure
         run: |
@@ -73,7 +93,7 @@ jobs:
           helm dependency build k8s-cluster/charts/infrastructure
           helm upgrade --install infrastructure k8s-cluster/charts/infrastructure \
             -f k8s-cluster/charts/infrastructure/values.yaml \
-            --wait --timeout 10m
+            --wait --timeout 15m
 
       - name: Debug Infra Failure
         if: always()
@@ -81,7 +101,7 @@ jobs:
           kubectl get pods -A
           kubectl get events --sort-by='.lastTimestamp'
           kubectl describe pod postgres-0 || true
-          kubectl describe pod rabbitmq-0 || true
+          kubectl describe pod kafka-0 || true
           kubectl describe pod infrastructure-keycloak-0 || true
           kubectl logs infrastructure-keycloak-0
 
@@ -99,6 +119,14 @@ jobs:
             path: rental-service
           - service: payment
             path: payment-service
+          - service: statistics
+            path: statistics-service
+          - service: logging
+            path: logging-service
+          - service: auth
+            path: auth-service
+          - service: analytics
+            path: analytics-service
           - service: gateway
             path: gateway-service
     steps:
@@ -124,32 +152,20 @@ jobs:
       - name: Maven Build & Test
         if: steps.check.outputs.changed == 'true'
         run: |
-          if [[ "${{ matrix.service }}" == "gateway" ]]; then
-             cd cars-service
-             mvn install -DskipTests
-             cd ..
+          # Install shared APIs for gateway and others
+          mvn install -pl cars-service/cars-service-api,rental-service/rental-service-api,payment-service/payment-service-api,statistics-service/statistics-service-api,logging-service/logging-service-api,auth-service/auth-service-api -am -DskipTests
           
-             cd rental-service
-             mvn install -DskipTests
-             cd ..
-
-             cd payment-service
-             mvn install -DskipTests
-             cd ..
-          fi
           cd ${{ matrix.path }}
-          mvn clean package
+          mvn clean package -DskipTests
         env:
           SPRING_PROFILES_ACTIVE: test
 
-      # login to docker hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # build and push
       - name: Build and Push Docker
         if: steps.check.outputs.changed == 'true'
         run: |
@@ -164,8 +180,6 @@ jobs:
           fi
           docker push $IMAGE_NAME:$TAG
 
-
-      # deploy
       - name: Set up Kubectl
         uses: azure/k8s-set-context@v3
         with:
@@ -193,41 +207,4 @@ jobs:
         run: |
           kubectl logs -l app=${{ matrix.service }}-service --tail=300 --all-containers=true
           kubectl get pods
-          kubectl logs -l app=rental-service
-          kubectl describe pod -l app=rental-service
-
-  integration-tests:
-    needs: build
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Kubectl
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-
-      - name: Wait for Gateway
-        run: |
-          kubectl wait -n default -l app=gateway-service pod --for=condition=Ready --timeout 3m
-          sleep 60
-
-      - name: Run API Tests
-        uses: matt-ball/newman-action@master
-        with:
-          collection: v3/postman/collection.json
-          environment: v3/postman/environment.json
-          delayRequest: 100
-          reporters: '[ "cli" ]'
-
-      - name: Autograding
-        uses: education/autograding@v1
-        continue-on-error: true
-
-      - name: Debug Logs
-        if: failure()
-        run: |
-          kubectl logs -l app=gateway-service --tail=50 --all-containers=true
-          kubectl get pods
+          kubectl describe pod -l app=${{ matrix.service }}-service

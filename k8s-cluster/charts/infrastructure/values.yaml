@@ -36,30 +36,17 @@ postgresql:
   volumePermissions:
     enabled: false
 
-rabbitmq:
-  fullnameOverride: "rabbitmq"
-
-  image:
-    registry: public.ecr.aws
-    repository: bitnami/rabbitmq
-    tag: "3.12"
-
-  auth:
-    username: rabbit
-    password: rabbit
-    erlangCookie: "secretcookie"
-
+kafka:
+  fullnameOverride: "kafka"
+  listeners:
+    client:
+      protocol: PLAINTEXT
+      port: 9092
+  zookeeper:
+    enabled: true
   persistence:
     enabled: false
-
-  livenessProbe:
-    enabled: false
-  readinessProbe:
-    enabled: false
-  startupProbe:
-    enabled: false
-
-  volumePermissions:
+  provisionpv:
     enabled: false
 
 keycloak:

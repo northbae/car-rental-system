@@ -39,12 +39,11 @@ env:
   CARS_SERVICE_URL: "http://cars-service:8070"
   RENTAL_SERVICE_URL: "http://rental-service:8060"
   PAYMENT_SERVICE_URL: "http://payment-service:8050"
+  AUTH_SERVICE_URL: "http://auth-service:8110"
+  LOGGING_SERVICE_URL: "http://logging-service:8090"
+  STATISTICS_SERVICE_URL: "http://statistics-service:8100"
 
-  SPRING_RABBITMQ_HOST: "rabbitmq"
-  SPRING_RABBITMQ_PORT: "5672"
-  SPRING_RABBITMQ_USERNAME: "rabbit"
-  SPRING_RABBITMQ_PASSWORD: "rabbit"
-  SPRING_RABBITMQ_VIRTUAL_HOST: "/"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
 
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://infrastructure-keycloak:80/auth/realms/car-rental"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://infrastructure-keycloak:80/auth/realms/car-rental/protocol/openid-connect/certs"

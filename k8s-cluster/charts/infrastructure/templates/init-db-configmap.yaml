@@ -10,7 +10,15 @@ data:
     CREATE DATABASE rental;
     CREATE DATABASE payment;
     CREATE DATABASE keycloak;
+    CREATE DATABASE auth;
+    CREATE DATABASE logging;
+    CREATE DATABASE statistics;
+    CREATE DATABASE analytics;
     GRANT ALL PRIVILEGES ON DATABASE cars TO postgres;
     GRANT ALL PRIVILEGES ON DATABASE rental TO postgres;
     GRANT ALL PRIVILEGES ON DATABASE payment TO postgres;
     GRANT ALL PRIVILEGES ON DATABASE keycloak TO postgres;
+    GRANT ALL PRIVILEGES ON DATABASE auth TO postgres;
+    GRANT ALL PRIVILEGES ON DATABASE logging TO postgres;
+    GRANT ALL PRIVILEGES ON DATABASE statistics TO postgres;
+    GRANT ALL PRIVILEGES ON DATABASE analytics TO postgres;

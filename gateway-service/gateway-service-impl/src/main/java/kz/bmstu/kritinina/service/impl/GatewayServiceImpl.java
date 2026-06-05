@@ -50,6 +50,9 @@ public class GatewayServiceImpl implements GatewayService {
     private final CarClient carClient;
     private final PaymentClient paymentClient;
     private final RentalClient rentalClient;
+    private final kz.bmstu.kritinina.client.ApplicationClient applicationClient;
+    private final kz.bmstu.kritinina.client.PartnerClient partnerClient;
+    private final kz.bmstu.kritinina.client.DepartmentClient departmentClient;
     private final GatewayMapper gatewayMapper;
     private final CircuitBreakerRegistry circuitBreakerRegistry;
     private final SagaOrchestrator sagaOrchestrator;
@@ -58,7 +61,7 @@ public class GatewayServiceImpl implements GatewayService {
     private final String ANSWER_FOR_SERVICE_UNAVAILABLE = "Сервис недоступен";
 
     @Override
-    public CarPage<CarDto> getAllCars(Boolean showAll, Pageable pageable) {
+    public CarPage<CarDto> getAllCars(Boolean showAll, String dateFrom, String dateTo, String carType, String city, Pageable pageable) {
         int originalPage = pageable.getPageNumber();
         Pageable adjustedPageable = PageRequest.of(
                 Math.max(0, originalPage - 1),
@@ -66,7 +69,7 @@ public class GatewayServiceImpl implements GatewayService {
                 Sort.unsorted()
         );
         try {
-            Page<CarDto> result = getAllCarsWithCircuitBreaker(showAll, adjustedPageable);
+            Page<CarDto> result = getAllCarsWithCircuitBreaker(showAll, dateFrom, dateTo, carType, city, adjustedPageable);
             return gatewayMapper.toCarPage(result);
         } catch (CircuitBreakerException e) {
             throw new ServiceUnavailableException("Cars Service unavailable");
@@ -217,10 +220,151 @@ public class GatewayServiceImpl implements GatewayService {
         }
     }
 
-    private Page<CarDto> getAllCarsWithCircuitBreaker(Boolean showAll, Pageable pageable) {
+    @Override
+    public kz.bmstu.kritinina.dto.ApplicationResponseDto createApplication(kz.bmstu.kritinina.dto.ApplicationRequestDto request) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> applicationClient.createApplication(request).getBody());
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public List<kz.bmstu.kritinina.dto.ApplicationResponseDto> getApplications() {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> applicationClient.getApplications().getBody());
+        } catch (CircuitBreakerException e) {
+            log.warn("Rental service unavailable, returning empty application list");
+            return Arrays.asList();
+        }
+    }
+
+    @Override
+    public void cancelApplication(Long id) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            circuitBreaker.execute(() -> {
+                applicationClient.cancelApplication(id);
+                return null;
+            });
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.dto.ApplicationResponseDto approveApplication(Long id) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> applicationClient.approveApplication(id).getBody());
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.dto.ApplicationResponseDto rejectApplication(Long id, String comment) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> applicationClient.rejectApplication(id, comment).getBody());
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public List<kz.bmstu.kritinina.dto.ApplicationResponseDto> getDepartmentApplications() {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> applicationClient.getDepartmentApplications().getBody());
+        } catch (CircuitBreakerException e) {
+            log.warn("Rental service unavailable, returning empty department application list");
+            return Arrays.asList();
+        }
+    }
+
+    @Override
+    public List<kz.bmstu.kritinina.dto.PartnerDto> getPartners() {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> partnerClient.getPartners().getBody());
+        } catch (CircuitBreakerException e) {
+            log.warn("Rental service unavailable, returning empty partner list");
+            return Arrays.asList();
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.dto.PartnerDto addPartner(kz.bmstu.kritinina.dto.PartnerDto partnerDto) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> partnerClient.addPartner(partnerDto).getBody());
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.dto.PartnerDto updatePartner(UUID id, kz.bmstu.kritinina.dto.PartnerDto partnerDto) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> partnerClient.updatePartner(id, partnerDto).getBody());
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public void disablePartner(UUID id) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            circuitBreaker.execute(() -> {
+                partnerClient.disablePartner(id);
+                return null;
+            });
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.dto.QuotaDto getDepartmentQuotas(UUID id) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> departmentClient.getDepartmentQuotas(id).getBody());
+        } catch (CircuitBreakerException e) {
+            log.warn("Rental service unavailable, returning zero quota");
+            return new kz.bmstu.kritinina.dto.QuotaDto(0, 0);
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.dto.QuotaDto updateDepartmentQuotas(UUID id, kz.bmstu.kritinina.dto.QuotaDto quotaDto) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> departmentClient.updateDepartmentQuotas(id, quotaDto).getBody());
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Rental Service unavailable");
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.dto.DepartmentStatisticsDto getDepartmentStatistics(UUID id) {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("rental-service");
+        try {
+            return circuitBreaker.execute(() -> departmentClient.getDepartmentStatistics(id).getBody());
+        } catch (CircuitBreakerException e) {
+            log.warn("Rental service unavailable, returning empty statistics");
+            return new kz.bmstu.kritinina.dto.DepartmentStatisticsDto(id, 0, 0);
+        }
+    }
+
+    private Page<CarDto> getAllCarsWithCircuitBreaker(Boolean showAll, String dateFrom, String dateTo, String carType, String city, Pageable pageable) {
         CircuitBreaker circuitBreakerCars = circuitBreakerRegistry.getOrCreate("cars-service");
         try {
-            return circuitBreakerCars.execute(() -> carClient.getCars(showAll, pageable).
+            return circuitBreakerCars.execute(() -> carClient.getCars(showAll, dateFrom, dateTo, carType, city, pageable).
                     getBody().map(gatewayMapper::toCarDto));
         } catch (CircuitBreakerException e) {
             throw new ServiceUnavailableException(ANSWER_FOR_SERVICE_UNAVAILABLE);

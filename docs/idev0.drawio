@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.6.3">
+  <diagram name="Страница-1" id="XV3NmzRRuaiUlTOdqPOc">
+    <mxGraphModel dx="777" dy="502" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4681" pageHeight="3300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-24" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="190" />
+              <mxPoint x="500" y="190" />
+            </Array>
+            <mxPoint x="550" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-25" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="1bVJJeHvnl7KgwD8e0jM-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="135" />
+              <mxPoint x="500" y="135" />
+            </Array>
+            <mxPoint x="560" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-1" parent="1" style="html=1;dashed=0;whiteSpace=wrap;" value="&lt;span data-start-index=&quot;488&quot; class=&quot;ng-star-inserted&quot; style=&quot;text-align: start; white-space-collapse: preserve; background-color: rgb(255, 255, 255);&quot;&gt;&lt;font face=&quot;Helvetica&quot; style=&quot;color: rgb(0, 0, 0);&quot;&gt;Вычислить быстрое преобразование Фурье&lt;/font&gt;&lt;/span&gt;" vertex="1">
+          <mxGeometry height="120" width="240" x="240" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-12" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="135" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Дискретный вибросигнал" vertex="1">
+          <mxGeometry height="30" width="100" x="80" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-11" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="205" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Параметры преобразования" vertex="1">
+          <mxGeometry height="30" width="110" x="70" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Частотно-временная спектрограмма сигнала" vertex="1">
+          <mxGeometry height="30" width="130" x="550" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Результат детекции аномалий" vertex="1">
+          <mxGeometry height="30" width="130" x="550" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-21" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="305" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Требования к разрешению" vertex="1">
+          <mxGeometry height="30" width="110" x="250" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-22" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Требования к времени обработки" vertex="1">
+          <mxGeometry height="30" width="120" x="360" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-19" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="305" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Графический ускоритель" vertex="1">
+          <mxGeometry height="30" width="60" x="275" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-20" edge="1" parent="1" source="1bVJJeHvnl7KgwD8e0jM-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1bVJJeHvnl7KgwD8e0jM-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Программная среда" vertex="1">
+          <mxGeometry height="30" width="60" x="390" y="270" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

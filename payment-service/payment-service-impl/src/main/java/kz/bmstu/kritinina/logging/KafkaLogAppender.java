@@ -1,0 +1,78 @@
+package kz.bmstu.kritinina.logging;
+
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.AppenderBase;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.time.LocalDateTime;
+
+public class KafkaLogAppender extends AppenderBase<ILoggingEvent> {
+
+    private String bootstrapServers;
+    private String topic;
+    private String serviceName;
+    private KafkaProducer<String, String> producer;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    @Override
+    public void start() {
+        if (bootstrapServers == null || topic == null || serviceName == null) {
+            addError("KafkaLogAppender properties not set");
+            return;
+        }
+
+        Properties props = new Properties();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.put(ProducerConfig.RETRIES_CONFIG, 0);
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 100);
+
+        try {
+            producer = new KafkaProducer<>(props);
+            super.start();
+        } catch (Exception e) {
+            addError("Failed to start KafkaProducer", e);
+        }
+    }
+
+    @Override
+    protected void append(ILoggingEvent event) {
+        if (event.getLoggerName().contains("org.apache.kafka") || event.getLoggerName().contains("kz.bmstu.kritinina.logging.KafkaLogAppender")) {
+            return;
+        }
+
+        try {
+            Map<String, Object> logEvent = new HashMap<>();
+            logEvent.put("service", serviceName);
+            logEvent.put("level", event.getLevel().toString());
+            logEvent.put("message", event.getFormattedMessage());
+            logEvent.put("timestamp", LocalDateTime.now().toString());
+
+            String json = objectMapper.writeValueAsString(logEvent);
+            producer.send(new ProducerRecord<>(topic, json));
+        } catch (Exception e) {
+            // No rec logs
+        }
+    }
+
+    @Override
+    public void stop() {
+        if (producer != null) {
+            producer.close();
+        }
+        super.stop();
+    }
+
+    public void setBootstrapServers(String bootstrapServers) { this.bootstrapServers = bootstrapServers; }
+    public void setTopic(String topic) { this.topic = topic; }
+    public void setServiceName(String serviceName) { this.serviceName = serviceName; }
+}

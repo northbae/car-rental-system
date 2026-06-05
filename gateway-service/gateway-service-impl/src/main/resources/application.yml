@@ -6,12 +6,17 @@ spring:
           jwk-set-uri: http://infrastructure-keycloak:80/auth/realms/car-rental/protocol/openid-connect/certs
           issuer-uri: http://infrastructure-keycloak:80/auth/realms/car-rental
 
-  rabbitmq:
-    host: rabbitmq
-    port: 5672
-    username: rabbit
-    password: rabbit
-    virtual-host: vhost
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: gateway-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 
 server:
   port: 8080

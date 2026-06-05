@@ -17,21 +17,23 @@ services:
     networks:
       - microservices-network
 
-  rabbitmq:
-    image: rabbitmq:latest
-    container_name: rabbitmq
-    hostname: rabbitmq
-    restart: unless-stopped
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: zookeeper
     environment:
-      TZ: Europe/Moscow
-      RABBITMQ_DEFAULT_USER: rabbit
-      RABBITMQ_DEFAULT_PASS: rabbit
-      RABBITMQ_DEFAULT_VHOST: vhost
-    volumes:
-      - ./rabbitmq:/var/lib/rabbitmq￼
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - microservices-network
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
     networks:
       - microservices-network
 
@@ -43,10 +45,13 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - rabbitmq
+      - kafka
       - cars-service
       - rental-service
       - payment-service
+      - logging-service
+      - statistics-service
+      - auth-service
     networks:
       - microservices-network
 
@@ -75,6 +80,36 @@ services:
     build: payment-service/
     ports:
       - "8050:8050"
+    depends_on:
+      - postgres
+    networks:
+      - microservices-network
+
+  logging-service:
+    image: ${DOCKER_USERNAME:-local}/logging-service:${IMAGE_TAG:-latest}
+    build: logging-service/
+    ports:
+      - "8090:8090"
+    depends_on:
+      - postgres
+    networks:
+      - microservices-network
+
+  statistics-service:
+    image: ${DOCKER_USERNAME:-local}/statistics-service:${IMAGE_TAG:-latest}
+    build: statistics-service/
+    ports:
+      - "8100:8100"
+    depends_on:
+      - postgres
+    networks:
+      - microservices-network
+
+  auth-service:
+    image: ${DOCKER_USERNAME:-local}/auth-service:${IMAGE_TAG:-latest}
+    build: auth-service/
+    ports:
+      - "8110:8110"
     depends_on:
       - postgres
     networks:

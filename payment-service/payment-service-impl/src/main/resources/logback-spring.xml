@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <springProperty scope="context" name="bootstrapServers" source="spring.kafka.bootstrap-servers" defaultValue="kafka:9092"/>
+    <springProperty scope="context" name="serviceName" source="spring.application.name" defaultValue="unknown-service"/>
+
+    <appender name="KAFKA" class="kz.bmstu.kritinina.logging.KafkaLogAppender">
+        <bootstrapServers>${bootstrapServers}</bootstrapServers>
+        <topic>api.logs.topic</topic>
+        <serviceName>${serviceName}</serviceName>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="KAFKA"/>
+    </root>
+</configuration>
