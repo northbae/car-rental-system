@@ -219,7 +219,7 @@ jobs:
           helm upgrade --install ${{ matrix.service }}-service k8s-cluster/charts/microservice \
             -f k8s-cluster/values/${{ matrix.service }}.yaml \
             --set global.imageTag=${{ github.sha }} \
-            --wait --timeout 5m
+            --wait --timeout 10m
 
       - name: Debug Logs
         if: always()
