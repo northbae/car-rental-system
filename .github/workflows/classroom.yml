@@ -68,15 +68,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Kubeconfig
-        run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ./kubeconfig
-
       - name: Set up Kubectl
         uses: azure/k8s-set-context@v3
         with:
           method: kubeconfig
-          kubeconfig: ./kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
       - name: Install Helm
         uses: azure/setup-helm@v3
@@ -182,17 +178,12 @@ jobs:
           fi
           docker push $IMAGE_NAME:$TAG
 
-      - name: Set up Kubeconfig
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > ./kubeconfig
-
       - name: Set up Kubectl
         if: steps.check.outputs.changed == 'true'
         uses: azure/k8s-set-context@v3
         with:
           method: kubeconfig
-          kubeconfig: ./kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
       - name: Install Helm
         if: steps.check.outputs.changed == 'true'
