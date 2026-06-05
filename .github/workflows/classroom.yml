@@ -68,6 +68,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Cloud.ru login plugin
+        run: |
+          curl -LO https://github.com/cloud-ru-tech/cloudlogin/releases/latest/download/cloudlogin_Linux_amd64.tar.gz
+          tar -xzf cloudlogin_Linux_amd64.tar.gz
+          sudo mv cloudlogin /usr/local/bin/
+          cloudlogin help
+
       - name: Set up Kubectl
         uses: azure/k8s-set-context@v3
         with:
@@ -177,6 +184,14 @@ jobs:
           docker build -t $IMAGE_NAME:$TAG .
           fi
           docker push $IMAGE_NAME:$TAG
+
+      - name: Install Cloud.ru login plugin
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          curl -LO https://github.com/cloud-ru-tech/cloudlogin/releases/latest/download/cloudlogin_Linux_amd64.tar.gz
+          tar -xzf cloudlogin_Linux_amd64.tar.gz
+          sudo mv cloudlogin /usr/local/bin/
+          cloudlogin help
 
       - name: Set up Kubectl
         if: steps.check.outputs.changed == 'true'
