@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -16,6 +15,5 @@ public class LogEvent implements Serializable {
     private String service;
     private String level;
     private String message;
-    @Builder.Default
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private Long timestamp;
 }

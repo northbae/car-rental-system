@@ -46,21 +46,20 @@ public class KafkaLogAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        if (event.getLoggerName().contains("org.apache.kafka") || event.getLoggerName().contains("kz.bmstu.kritinina.logging.KafkaLogAppender")) {
+        if (!isStarted() || producer == null || event.getLoggerName().contains("org.apache.kafka") || event.getLoggerName().contains("kz.bmstu.kritinina.logging")) {
             return;
         }
 
         try {
-            Map<String, Object> logEvent = new HashMap<>();
-            logEvent.put("service", serviceName);
-            logEvent.put("level", event.getLevel().toString());
-            logEvent.put("message", event.getFormattedMessage());
-            logEvent.put("timestamp", LocalDateTime.now().toString());
+            Map<String, Object> logMap = new HashMap<>();
+            logMap.put("service", serviceName);
+            logMap.put("level", event.getLevel().toString());
+            logMap.put("message", event.getFormattedMessage());
+            logMap.put("timestamp", System.currentTimeMillis());
 
-            String json = objectMapper.writeValueAsString(logEvent);
+            String json = objectMapper.writeValueAsString(logMap);
             producer.send(new ProducerRecord<>(topic, json));
-        } catch (Exception e) {
-            // No rec logs
+        } catch (Exception ignored) {
         }
     }
 

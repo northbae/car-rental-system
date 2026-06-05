@@ -21,8 +21,12 @@ public class LogServiceImpl implements LogService {
     @Override
     @Transactional
     public void saveLog(LogEvent event) {
+        java.time.LocalDateTime ts = event.getTimestamp() != null 
+                ? java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(event.getTimestamp()), java.time.ZoneId.systemDefault())
+                : java.time.LocalDateTime.now();
+
         LogEntity entity = LogEntity.builder()
-                .timestamp(event.getTimestamp())
+                .timestamp(ts)
                 .serviceName(event.getService())
                 .level(event.getLevel())
                 .message(event.getMessage())
