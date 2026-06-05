@@ -38,15 +38,22 @@ postgresql:
 
 kafka:
   fullnameOverride: "kafka"
+  kraft:
+    enabled: true
+  zookeeper:
+    enabled: false
+  controller:
+    replicaCount: 1
+  broker:
+    replicaCount: 1
   listeners:
     client:
       protocol: PLAINTEXT
       port: 9092
-  zookeeper:
-    enabled: true
+    controller:
+      protocol: PLAINTEXT
+      port: 9093
   persistence:
-    enabled: false
-  provisionpv:
     enabled: false
 
 keycloak:
