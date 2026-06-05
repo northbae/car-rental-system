@@ -172,11 +172,11 @@ jobs:
       - name: Maven Build & Test
         if: steps.check.outputs.changed == 'true'
         run: |
-          # Manually install all API modules to local repo because there is no root aggregator pom
+          # Install shared APIs for dependency resolution across matrix jobs
           for s in cars-service rental-service payment-service statistics-service logging-service auth-service analytics-service; do
             if [ -f "$s/pom.xml" ]; then
               echo "Installing API for $s..."
-              mvn install -f $s/pom.xml -pl $s-api -am -DskipTests || true
+              mvn install -f $s/pom.xml -pl $s-api -am -DskipTests
             fi
           done
           
@@ -224,6 +224,5 @@ jobs:
       - name: Debug Logs
         if: always()
         run: |
-          kubectl logs -l app=${{ matrix.service }}-service --tail=300 --all-containers=true
+          kubectl logs -l app=${{ matrix.service }}-service --tail=300 --all-containers=true || true
           kubectl get pods
-          kubectl describe pod -l app=${{ matrix.service }}-service
