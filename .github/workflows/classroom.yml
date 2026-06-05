@@ -132,6 +132,8 @@ jobs:
             path: logging-service
           - service: auth
             path: auth-service
+          - service: analytics
+            path: analytics-service
           - service: gateway
             path: gateway-service
     steps:
@@ -140,6 +142,19 @@ jobs:
           fetch-depth: 0
 
       - uses: docker/setup-buildx-action@v2
+
+      - name: Install Cloud.ru login plugin
+        run: |
+          curl -LO https://github.com/cloud-ru-tech/cloudlogin/releases/latest/download/cloudlogin_Linux_amd64.tar.gz
+          tar -xzf cloudlogin_Linux_amd64.tar.gz
+          sudo mv cloudlogin /usr/local/bin/
+          cloudlogin help
+
+      - name: Set up Kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
       - name: Check if changed
         id: check
@@ -157,8 +172,13 @@ jobs:
       - name: Maven Build & Test
         if: steps.check.outputs.changed == 'true'
         run: |
-          # Install shared APIs for gateway and others
-          mvn install -pl cars-service/cars-service-api,rental-service/rental-service-api,payment-service/payment-service-api,statistics-service/statistics-service-api,logging-service/logging-service-api,auth-service/auth-service-api -am -DskipTests
+          # Manually install all API modules to local repo because there is no root aggregator pom
+          for s in cars-service rental-service payment-service statistics-service logging-service auth-service analytics-service; do
+            if [ -f "$s/pom.xml" ]; then
+              echo "Installing API for $s..."
+              mvn install -f $s/pom.xml -pl $s-api -am -DskipTests || true
+            fi
+          done
           
           cd ${{ matrix.path }}
           mvn clean package -DskipTests
@@ -184,21 +204,6 @@ jobs:
           docker build -t $IMAGE_NAME:$TAG .
           fi
           docker push $IMAGE_NAME:$TAG
-
-      - name: Install Cloud.ru login plugin
-        if: steps.check.outputs.changed == 'true'
-        run: |
-          curl -LO https://github.com/cloud-ru-tech/cloudlogin/releases/latest/download/cloudlogin_Linux_amd64.tar.gz
-          tar -xzf cloudlogin_Linux_amd64.tar.gz
-          sudo mv cloudlogin /usr/local/bin/
-          cloudlogin help
-
-      - name: Set up Kubectl
-        if: steps.check.outputs.changed == 'true'
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
       - name: Install Helm
         if: steps.check.outputs.changed == 'true'
