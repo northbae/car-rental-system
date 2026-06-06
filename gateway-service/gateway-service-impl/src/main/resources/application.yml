@@ -11,6 +11,10 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        max.block.ms: 5000
+    properties:
+      request.timeout.ms: 5000
     consumer:
       group-id: gateway-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -20,6 +24,7 @@ spring:
 
 server:
   port: 8080
+  address: 0.0.0.0
 
 springdoc:
   api-docs:
@@ -51,12 +56,6 @@ management:
   endpoint:
     health:
       show-details: always
-      show-components: always
-  health:
-    kafka:
-      enabled: false
-    liquibase:
-      enabled: false
 
 keycloak:
   token-uri: ${KEYCLOAK_TOKEN_URI:http://infrastructure-keycloak:80/auth/realms/car-rental/protocol/openid-connect/token}

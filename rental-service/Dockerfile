@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:17
+FROM amazoncorretto:17-alpine
 WORKDIR /rental-service
 COPY rental-service-impl/target/*.jar rental-service.jar
 EXPOSE 8060

@@ -40,15 +40,13 @@ spec:
               mountPath: /tmp
 
           startupProbe:
-            httpGet:
-              path: {{ .Values.healthCheckPath }}
+            tcpSocket:
               port: http
             failureThreshold: 60
             periodSeconds: 10
             timeoutSeconds: 5
           livenessProbe:
-            httpGet:
-              path: {{ .Values.healthCheckPath }}
+            tcpSocket:
               port: http
             initialDelaySeconds: 60
             periodSeconds: 15

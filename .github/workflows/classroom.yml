@@ -93,15 +93,22 @@ jobs:
 
       - name: Clean up old conflicting resources
         run: |
-          kubectl delete service postgres --ignore-not-found=true
-          kubectl delete service kafka --ignore-not-found=true
+          # Uninstall everything first
+          helm uninstall infrastructure --wait || true
+          for s in cars rental payment statistics logging auth analytics gateway frontend; do
+            helm uninstall ${s}-service --wait || true
+          done
+
+          # Force delete statefulsets and deployments
+          kubectl delete statefulset --all --ignore-not-found=true
+          kubectl delete deployment --all --ignore-not-found=true
+          kubectl delete service --all --ignore-not-found=true
           
-          kubectl delete statefulset postgres --ignore-not-found=true
-          kubectl delete statefulset kafka-broker --ignore-not-found=true
-          kubectl delete statefulset kafka-controller --ignore-not-found=true
-          
-          # Delete PVCs to force database re-initialization
+          # CRITICAL: Delete ALL PVCs to wipe all databases and kafka state
           kubectl delete pvc --all --ignore-not-found=true
+          
+          # Wait for resources to be gone
+          sleep 30
 
       - name: Deploy Infrastructure
         run: |

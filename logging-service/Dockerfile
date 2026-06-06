@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:17
+FROM amazoncorretto:17-alpine
 WORKDIR /logging-service
 COPY logging-service-impl/target/*.jar logging-service.jar
 EXPOSE 8090

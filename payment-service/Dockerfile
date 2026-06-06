@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:17
+FROM amazoncorretto:17-alpine
 WORKDIR /payment-service
 COPY payment-service-impl/target/*.jar payment-service.jar
 EXPOSE 8050

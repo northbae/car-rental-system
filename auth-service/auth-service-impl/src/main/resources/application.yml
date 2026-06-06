@@ -1,5 +1,6 @@
 server:
   port: 8110
+  address: 0.0.0.0
 spring:
   application:
     name: auth-service
@@ -22,6 +23,11 @@ spring:
           jwk-set-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI:http://infrastructure-keycloak:80/auth/realms/car-rental/protocol/openid-connect/certs}
   kafka:
     bootstrap-servers: kafka:9092
+    producer:
+      properties:
+        max.block.ms: 5000
+    properties:
+      request.timeout.ms: 5000
 
 keycloak:
   server-url: ${KEYCLOAK_SERVER_URL:http://infrastructure-keycloak:80/auth}
@@ -37,10 +43,3 @@ management:
   endpoint:
     health:
       show-details: always
-      show-components: always
-  health:
-    kafka:
-      enabled: false
-    liquibase:
-      enabled: false
-

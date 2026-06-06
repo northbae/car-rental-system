@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjre-alpine:17
+FROM amazoncorretto:17-alpine
 WORKDIR /gateway-service
 COPY gateway-service/gateway-service-impl/target/*.jar gateway-service.jar
 EXPOSE 8080
