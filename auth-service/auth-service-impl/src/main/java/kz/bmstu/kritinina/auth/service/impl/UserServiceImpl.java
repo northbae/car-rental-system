@@ -33,16 +33,10 @@ public class UserServiceImpl implements UserService {
     @Value("${keycloak.realm}")
     private String realm;
 
-    @Value("${keycloak.client-id}")
-    private String clientId;
-
-    @Value("${keycloak.client-secret}")
-    private String clientSecret;
-
     private Keycloak getKeycloakInstance() {
         return KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
-                .realm("master") // Admin API usually requires master realm or specific realm with rights
+                .realm("master")
                 .clientId("admin-cli")
                 .grantType("password")
                 .username("admin")
@@ -53,7 +47,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
+        System.out.println("[DEBUG] Starting registration for: " + dto.getUsername());
+        
         Keycloak keycloak = getKeycloakInstance();
+        System.out.println("[DEBUG] Keycloak instance created");
 
         UserRepresentation user = new UserRepresentation();
         user.setEnabled(true);
@@ -68,24 +65,31 @@ public class UserServiceImpl implements UserService {
         credential.setTemporary(false);
         user.setCredentials(Collections.singletonList(credential));
 
+        System.out.println("[DEBUG] Calling Keycloak API to create user...");
         Response response = keycloak.realm(realm).users().create(user);
+        
         if (response.getStatus() != 201) {
-            String errorMsg = "Unknown error";
-            try { errorMsg = response.readEntity(String.class); } catch (Exception ignored) {}
-            throw new RuntimeException("Failed to create user in Keycloak: " + response.getStatus() + " " + errorMsg);
+            String errorMsg = "Status: " + response.getStatus();
+            try { errorMsg += ", Body: " + response.readEntity(String.class); } catch (Exception ignored) {}
+            System.err.println("[DEBUG] Keycloak failure: " + errorMsg);
+            throw new RuntimeException("Failed to create user in Keycloak: " + errorMsg);
         }
+        System.out.println("[DEBUG] User created in Keycloak successfully");
 
         List<UserRepresentation> search = keycloak.realm(realm).users().search(dto.getUsername());
         if (search.isEmpty()) {
             throw new RuntimeException("User created but not found in search");
         }
         String keycloakId = search.get(0).getId();
+        System.out.println("[DEBUG] Found Keycloak ID: " + keycloakId);
 
         try {
+            System.out.println("[DEBUG] Assigning role: " + dto.getRole());
             RoleRepresentation roleRep = keycloak.realm(realm).roles().get(dto.getRole()).toRepresentation();
             keycloak.realm(realm).users().get(keycloakId).roles().realmLevel().add(Collections.singletonList(roleRep));
+            System.out.println("[DEBUG] Role assigned");
         } catch (Exception e) {
-            System.err.println("Failed to assign role: " + e.getMessage());
+            System.err.println("[DEBUG] Role assignment error: " + e.getMessage());
         }
 
         UserEntity entity = UserEntity.builder()
@@ -98,7 +102,9 @@ public class UserServiceImpl implements UserService {
                 .departmentId(dto.getDepartmentId())
                 .build();
 
+        System.out.println("[DEBUG] Saving to Local DB...");
         userRepository.save(entity);
+        System.out.println("[DEBUG] Saved to Local DB successfully");
 
         return mapToDto(entity);
     }
@@ -106,7 +112,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getCurrentUser(String username) {
         UserEntity entity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found in local DB: " + username));
         return mapToDto(entity);
     }
 

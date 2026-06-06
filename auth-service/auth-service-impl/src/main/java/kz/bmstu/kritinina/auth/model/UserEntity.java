@@ -29,5 +29,6 @@ public class UserEntity {
     
     private String role;
     
+    @Column(name = "department_id")
     private String departmentId;
 }
