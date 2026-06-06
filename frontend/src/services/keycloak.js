@@ -20,7 +20,7 @@ export const initKeycloak = (onResult) => {
     })
 }
 
-export const login = () => keycloak.login()
+export const login = () => keycloak.login({ redirectUri: window.location.origin })
 export const getToken = () => keycloak.token
 export const updateToken = (minValidity = 5) => keycloak.updateToken(minValidity)
 export const logout = () => keycloak.logout()

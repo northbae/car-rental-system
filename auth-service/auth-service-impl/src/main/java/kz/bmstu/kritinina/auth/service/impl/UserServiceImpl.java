@@ -10,6 +10,7 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,10 +70,23 @@ public class UserServiceImpl implements UserService {
 
         Response response = keycloak.realm(realm).users().create(user);
         if (response.getStatus() != 201) {
-            throw new RuntimeException("Failed to create user in Keycloak: " + response.getStatus());
+            String errorMsg = "Unknown error";
+            try { errorMsg = response.readEntity(String.class); } catch (Exception ignored) {}
+            throw new RuntimeException("Failed to create user in Keycloak: " + response.getStatus() + " " + errorMsg);
         }
 
-        String keycloakId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+        List<UserRepresentation> search = keycloak.realm(realm).users().search(dto.getUsername());
+        if (search.isEmpty()) {
+            throw new RuntimeException("User created but not found in search");
+        }
+        String keycloakId = search.get(0).getId();
+
+        try {
+            RoleRepresentation roleRep = keycloak.realm(realm).roles().get(dto.getRole()).toRepresentation();
+            keycloak.realm(realm).users().get(keycloakId).roles().realmLevel().add(Collections.singletonList(roleRep));
+        } catch (Exception e) {
+            System.err.println("Failed to assign role: " + e.getMessage());
+        }
 
         UserEntity entity = UserEntity.builder()
                 .id(UUID.fromString(keycloakId))
