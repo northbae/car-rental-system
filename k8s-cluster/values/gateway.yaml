@@ -6,26 +6,7 @@ service:
   targetPort: 8080
 
 ingress:
-  enabled: true
-  className: "nginx"
-  hosts:
-    - host: ""
-      paths:
-        - path: /api
-          pathType: Prefix
-          backend:
-            service:
-              name: gateway-service
-              port:
-                number: 8080
-
-        - path: /auth
-          pathType: Prefix
-          backend:
-            service:
-              name: infrastructure-keycloak
-              port:
-                number: 80
+  enabled: false
 
 resources:
   requests:

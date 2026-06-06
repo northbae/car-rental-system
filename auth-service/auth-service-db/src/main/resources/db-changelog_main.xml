@@ -22,4 +22,6 @@
         </createTable>
     </changeSet>
 
+    <include file="db-changelog_v1_0/make-dept-nullable.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

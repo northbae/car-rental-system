@@ -21,7 +21,8 @@ postgresql:
 
   primary:
     persistence:
-      enabled: false
+      enabled: true
+      size: 1Gi
 
     livenessProbe:
       enabled: false
@@ -50,7 +51,8 @@ kafka:
   controller:
     replicaCount: 1
     persistence:
-      enabled: false
+      enabled: true
+      size: 1Gi
     resources:
       requests:
         memory: "256Mi"
@@ -62,7 +64,8 @@ kafka:
   broker:
     replicaCount: 1
     persistence:
-      enabled: false
+      enabled: true
+      size: 1Gi
     resources:
       requests:
         memory: "512Mi"
@@ -80,9 +83,9 @@ kafka:
       port: 9093
 
   persistence:
-    enabled: false
+    enabled: true
   provisionpv:
-    enabled: false
+    enabled: true
 
 keycloak:
   image:
@@ -126,11 +129,7 @@ keycloak:
       readOnly: true
 
   ingress:
-    enabled: true
-    ingressClassName: nginx
-    pathType: Prefix
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+    enabled: false
 
   httpRelativePath: "/auth/"
 
