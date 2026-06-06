@@ -1,4 +1,4 @@
-FROM amazoncorretto:17
+FROM bellsoft/liberica-openjre-alpine:17
 WORKDIR /analytics-service
 COPY analytics-service-impl/target/*.jar analytics-service.jar
 EXPOSE 8120

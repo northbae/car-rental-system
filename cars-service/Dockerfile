@@ -1,4 +1,4 @@
-FROM amazoncorretto:17
+FROM bellsoft/liberica-openjre-alpine:17
 WORKDIR /cars-service
 COPY cars-service-impl/target/*.jar cars-service.jar
 EXPOSE 8070

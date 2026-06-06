@@ -23,6 +23,11 @@ postgresql:
     persistence:
       enabled: true
       size: 1Gi
+    resources:
+      limits:
+        ephemeral-storage: "512Mi"
+      requests:
+        ephemeral-storage: "256Mi"
 
     livenessProbe:
       enabled: false
