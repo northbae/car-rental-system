@@ -28,6 +28,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/authorize", "/api/v1/callback", "/api/v1/oauth/token").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers("/actuator/**", "/manage/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cars/**").permitAll()
                         .requestMatchers("/api/v1/rental/**", "/api/v1/applications/create").hasRole("EMPLOYEE")

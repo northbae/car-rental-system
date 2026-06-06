@@ -19,6 +19,7 @@ jobs:
       auth: ${{ steps.filter.outputs.auth }}
       analytics: ${{ steps.filter.outputs.analytics }}
       gateway: ${{ steps.filter.outputs.gateway }}
+      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: actions/checkout@v4
 
@@ -59,6 +60,10 @@ jobs:
             gateway:
               - 'gateway-service/**'
               - 'k8s-cluster/values/gateway.yaml'
+              - 'k8s-cluster/charts/microservice/**'
+            frontend:
+              - 'frontend/**'
+              - 'k8s-cluster/values/frontend.yaml'
               - 'k8s-cluster/charts/microservice/**'
 
   deploy-infra:
@@ -140,6 +145,8 @@ jobs:
             path: analytics-service
           - service: gateway
             path: gateway-service
+          - service: frontend
+            path: frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -174,9 +181,8 @@ jobs:
           distribution: 'corretto'
 
       - name: Maven Build & Test
-        if: steps.check.outputs.changed == 'true'
+        if: steps.check.outputs.changed == 'true' && matrix.service != 'frontend'
         run: |
-          # Install shared APIs for dependency resolution across matrix jobs
           for s in cars-service rental-service payment-service statistics-service logging-service auth-service analytics-service; do
             if [ -f "$s/pom.xml" ]; then
               echo "Installing API for $s..."
@@ -199,6 +205,9 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         run: |
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}-service"
+          if [[ "${{ matrix.service }}" == "frontend" ]]; then
+            IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/frontend"
+          fi
           TAG="${{ github.sha }}"
 
           if [[ "${{ matrix.service }}" == "gateway" ]]; then

@@ -115,6 +115,16 @@ services:
     networks:
       - microservices-network
 
+  frontend:
+    image: ${DOCKER_USERNAME:-local}/frontend:${IMAGE_TAG:-latest}
+    build: frontend/
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+    networks:
+      - microservices-network
+
 volumes:
   db-data:
 
