@@ -32,14 +32,14 @@ spec:
 
           startupProbe:
             httpGet:
-              path: /actuator/health
+              path: {{ .Values.healthCheckPath }}
               port: http
             failureThreshold: 60
             periodSeconds: 10
             timeoutSeconds: 5
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: {{ .Values.healthCheckPath }}
               port: http
             initialDelaySeconds: 60
             periodSeconds: 15
@@ -47,7 +47,7 @@ spec:
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: {{ .Values.healthCheckPath }}
               port: http
             initialDelaySeconds: 60
             periodSeconds: 10

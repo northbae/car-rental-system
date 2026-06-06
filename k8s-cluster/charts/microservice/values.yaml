@@ -30,3 +30,5 @@ ingress:
           pathType: Prefix
 
 env: {}
+
+healthCheckPath: /actuator/health
