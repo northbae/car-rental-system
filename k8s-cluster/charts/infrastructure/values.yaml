@@ -133,3 +133,11 @@ keycloak:
       nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
 
   httpRelativePath: "/auth/"
+
+ingress-nginx:
+  controller:
+    service:
+      type: LoadBalancer
+    watchIngressWithoutClass: true
+    publishService:
+      enabled: true
