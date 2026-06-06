@@ -32,3 +32,6 @@ env:
   KEYCLOAK_TOKEN_URI: "http://infrastructure-keycloak:80/auth/realms/car-rental/protocol/openid-connect/token"
   KEYCLOAK_CLIENT_ID: "rental-client"
   KEYCLOAK_CLIENT_SECRET: "my-super-secret"
+
+  SERVER_ADDRESS: "0.0.0.0"
+  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "5"

@@ -7,10 +7,10 @@ service:
 
 resources:
   requests:
-    memory: "512Mi"
-    cpu: "100m"
-  limits:
     memory: "768Mi"
+    cpu: "200m"
+  limits:
+    memory: "1Gi"
     cpu: "500m"
 
 env:
@@ -27,3 +27,6 @@ env:
   KEYCLOAK_REALM: "car-rental"
   KEYCLOAK_CLIENT_ID: "admin-cli"
   KEYCLOAK_CLIENT_SECRET: "admin-secret"
+
+  SERVER_ADDRESS: "0.0.0.0"
+  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "5"

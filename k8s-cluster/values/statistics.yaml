@@ -7,10 +7,10 @@ service:
 
 resources:
   requests:
-    memory: "512Mi"
-    cpu: "100m"
-  limits:
     memory: "768Mi"
+    cpu: "200m"
+  limits:
+    memory: "1Gi"
     cpu: "500m"
 
 env:
@@ -22,3 +22,6 @@ env:
 
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://infrastructure-keycloak:80/auth/realms/car-rental"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://infrastructure-keycloak:80/auth/realms/car-rental/protocol/openid-connect/certs"
+
+  SERVER_ADDRESS: "0.0.0.0"
+  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "5"

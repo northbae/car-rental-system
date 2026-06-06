@@ -55,8 +55,7 @@ spec:
             failureThreshold: 10
             timeoutSeconds: 5
           readinessProbe:
-            httpGet:
-              path: {{ .Values.healthCheckPath }}
+            tcpSocket:
               port: http
             initialDelaySeconds: 60
             periodSeconds: 10
