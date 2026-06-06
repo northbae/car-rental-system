@@ -1,0 +1,16 @@
+server:
+  port: 8120
+
+spring:
+  application:
+    name: analytics-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      show-components: always

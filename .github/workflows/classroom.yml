@@ -91,8 +91,12 @@ jobs:
           kubectl delete service postgres --ignore-not-found=true
           kubectl delete service kafka --ignore-not-found=true
           
-          kubectl delete deployment postgres --ignore-not-found=true
-          kubectl delete deployment kafka --ignore-not-found=true
+          kubectl delete statefulset postgres --ignore-not-found=true
+          kubectl delete statefulset kafka-broker --ignore-not-found=true
+          kubectl delete statefulset kafka-controller --ignore-not-found=true
+          
+          # Delete PVCs to force database re-initialization
+          kubectl delete pvc --all --ignore-not-found=true
 
       - name: Deploy Infrastructure
         run: |

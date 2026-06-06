@@ -28,3 +28,14 @@ keycloak:
   realm: ${KEYCLOAK_REALM:car-rental}
   client-id: ${KEYCLOAK_CLIENT_ID:admin-cli}
   client-secret: ${KEYCLOAK_CLIENT_SECRET:admin-secret}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+

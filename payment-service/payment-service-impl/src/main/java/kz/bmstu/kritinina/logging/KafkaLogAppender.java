@@ -25,7 +25,7 @@ public class KafkaLogAppender extends AppenderBase<ILoggingEvent> {
     @Override
     public void start() {
         if (bootstrapServers == null || topic == null || serviceName == null) {
-            addError("KafkaLogAppender properties not set");
+            System.err.println("KafkaLogAppender properties not set");
             return;
         }
 
@@ -40,7 +40,8 @@ public class KafkaLogAppender extends AppenderBase<ILoggingEvent> {
             producer = new KafkaProducer<>(props);
             super.start();
         } catch (Exception e) {
-            addError("Failed to start KafkaProducer", e);
+            System.err.println("Failed to start KafkaProducer: " + e.getMessage());
+            // Do NOT call addError, as it causes Logback to crash Spring Boot!
         }
     }
 
