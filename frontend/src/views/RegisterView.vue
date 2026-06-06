@@ -85,7 +85,7 @@ const form = reactive({
   firstName: '',
   lastName: '',
   role: 'EMPLOYEE',
-  departmentId: ''
+  departmentId: 'GENERAL'
 })
 
 const rules = {
@@ -95,7 +95,7 @@ const rules = {
   firstName: [{ required: true, message: 'Please input first name', trigger: 'blur' }],
   lastName: [{ required: true, message: 'Please input last name', trigger: 'blur' }],
   role: [{ required: true, message: 'Please select role', trigger: 'change' }],
-  departmentId: [{ required: true, message: 'Please input department', trigger: 'blur' }]
+  departmentId: [{ required: false, trigger: 'blur' }]
 }
 
 const handleRegister = async () => {
