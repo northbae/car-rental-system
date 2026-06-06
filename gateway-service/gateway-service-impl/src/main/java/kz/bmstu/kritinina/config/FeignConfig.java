@@ -14,8 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import kz.bmstu.kritinina.client.UserClient;
+
 @Configuration
-@EnableFeignClients(clients = {CarClient.class, RentalClient.class, PaymentClient.class, ApplicationClient.class, PartnerClient.class, DepartmentClient.class}, defaultConfiguration = FeignConfig.class)
+@EnableFeignClients(clients = {CarClient.class, RentalClient.class, PaymentClient.class, ApplicationClient.class, PartnerClient.class, DepartmentClient.class, UserClient.class}, defaultConfiguration = FeignConfig.class)
 public class FeignConfig {
 
     @Bean

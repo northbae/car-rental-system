@@ -53,6 +53,7 @@ public class GatewayServiceImpl implements GatewayService {
     private final kz.bmstu.kritinina.client.ApplicationClient applicationClient;
     private final kz.bmstu.kritinina.client.PartnerClient partnerClient;
     private final kz.bmstu.kritinina.client.DepartmentClient departmentClient;
+    private final kz.bmstu.kritinina.client.UserClient userClient;
     private final GatewayMapper gatewayMapper;
     private final CircuitBreakerRegistry circuitBreakerRegistry;
     private final SagaOrchestrator sagaOrchestrator;
@@ -358,6 +359,31 @@ public class GatewayServiceImpl implements GatewayService {
         } catch (CircuitBreakerException e) {
             log.warn("Rental service unavailable, returning empty statistics");
             return new kz.bmstu.kritinina.dto.DepartmentStatisticsDto(id, 0, 0);
+        }
+    }
+
+    @Override
+    public kz.bmstu.kritinina.auth.dto.UserResponseDto createUser(kz.bmstu.kritinina.auth.dto.UserCreateDto dto) {
+        return userClient.createUser(dto).getBody();
+    }
+
+    @Override
+    public kz.bmstu.kritinina.auth.dto.UserResponseDto getCurrentUser() {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("auth-service");
+        try {
+            return circuitBreaker.execute(() -> userClient.getCurrentUser().getBody());
+        } catch (CircuitBreakerException e) {
+            throw new ServiceUnavailableException("Auth Service unavailable");
+        }
+    }
+
+    @Override
+    public List<kz.bmstu.kritinina.auth.dto.UserResponseDto> getAllUsers() {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.getOrCreate("auth-service");
+        try {
+            return circuitBreaker.execute(() -> userClient.getAllUsers().getBody());
+        } catch (CircuitBreakerException e) {
+            return java.util.Collections.emptyList();
         }
     }
 

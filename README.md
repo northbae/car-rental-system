@@ -1,54 +1,133 @@
-# Лабораторная работа #5
+# cloudlogin
 
-![GitHub Classroom Workflow](../../workflows/GitHub%20Classroom%20Workflow/badge.svg?branch=master)
+Утилита для получения и обновления пользовательского токена на основе персональных ключей доступа Cloud.ru.
+Необходима при подключении к кластеру Evolution Managed Kubernetes.
 
-## OAuth2 Authorization
+При работе с kubectl утилита cloudlogin будет автоматически запрашивать и обновлять токен для подключения к кластеру. 
+Если токен валидный, пользователь получит доступ к кластеру. 
+При просроченом токене cloudlogin перевыпустит его.
 
-### Формулировка
+## Установка и настройка
+ 
+1. Скачайте cloudlogin для вашей операционной системы.
 
-На базе [Лабораторной работы #4](https://github.com/bmstu-rsoi/lab2-template) реализовать OAuth2 token-based
-авторизацию.
+1. Настройте cloudlogin для выполнения.
+ 
+   **Linux или macOS**
+   
+   1. Распакуйте загруженный архив:
+   
+      ```shell
+	  tar -xzf <archive_name>
+	  ```
+	  
+	  Где `<archive_name>` — название загруженного архива. 
+	  Например, `cloudlogin_Linux_amd64.tar.gz`.
+   
+   
+   1. Переместите файл cloudlogin в директорию /usr/local/bin:
+   
+	  ```shell
+	  sudo mv cloudlogin /usr/local/bin
+	  ```	  
+   
+   **Windows**
+   
+   1. Распакуйте загруженный архив в директорию cloudlogin.
+   
+   1. Переместите директорию cloudlogin в C:\Program Files.
 
-* Для авторизации использовать OpenID Connect, в роли Identity Provider использовать стороннее решение.
-* На Identity Provider настроить
-  использование [Resource Owner Password flow](https://auth0.com/docs/authorization/flows/resource-owner-password-flow)
-  (в одном запросе передается `clientId`, `clientSecret`, `username`, `password`).
-* Все методы `/api/**` (кроме `/api/v1/authorize` и `/api/v1/callback`) на всех сервисах закрыть token-based
-  авторизацией.
-* В качестве токена использовать [JWT](https://jwt.io/introduction), для валидации токена
-  использовать [JWKs](https://auth0.com/docs/security/tokens/json-web-tokens/json-web-key-sets), _запрос к Identity
-  Provider делать не нужно_.
-* JWT токен пробрасывать между сервисами, при получении запроса валидацию токена так же реализовать через JWKs.
-* Убрать заголовок `X-User-Name` и получать пользователя из JWT-токена.
-* Если авторизация некорректная (отсутствие токена, ошибка валидации JWT токена, закончилось время жизни токена
-  (поле `exp` в payload)), то отдавать 401 ошибку.
-* В `scope` достаточно указывать `openid profile email`.
+   1. Добавьте путь к cloudlogin в переменную окружения PATH.
+   
+   
+1. Проверьте работу утилиты, выполнив:
 
-### Требования
+   ```shell
+   cloudlogin help
+   ```
+   
+   Если утилита установлена правильно, будет доступна справочная информация о работе с ней.
+   
+## Настройка kubeconfig
 
-1. Для автоматических прогонов тестов в файле [autograding.json](.github/classroom/autograding.json)
-   и [classroom.yml](.github/workflows/classroom.yml) заменить `<variant>` на ваш вариант.
-1. Код хранить на Github, для сборки использовать Github Actions.
-1. Каждый сервис должен быть завернут в docker.
-1. В classroom.yml дописать шаги на сборку, прогон unit-тестов.
+1. [Получите kubeconfig вашего кластера](https://cloud.ru/ru/docs/kubernetes-evolution/ug/topics/guides__cluster__download-kubeconfig.html).
 
-### Пояснения
+1. [Создайте персональный ключ доступа](https://cloud.ru/ru/docs/console_api/ug/topics/guides__api_key.html), если еще не создавали.
 
-1. В роли Identity Provider можно использовать любое решение, вот несколько рабочих вариантов:
-    1. [Okta](https://developer.okta.com/docs/guides/)
-    2. [Auth0](https://auth0.com/developers)
-2. Для получения metadata для OpenID Connect можно
-   использовать [Well-Known URI](https://auth0.com/docs/security/tokens/json-web-tokens/locate-json-web-key-sets):
-   `https://[base-server-url]/.well-known/openid-configuration`.
-3. Из Well-Known metadata можно получить Issuer URI и JWKs URI.
-4. Для реализации OAuth2 можно использовать сторонние библиотеки.
+1. Пропишите в kubeconfig персональный ключ доступа одним из способов:
 
-### Прием задания
+   **Способ 1**
 
-1. При получении задания у вас создается fork этого репозитория для вашего пользователя.
-2. После того как все тесты успешно завершатся, в Github Classroom на Dashboard будет отмечено успешное выполнение
-   тестов.
+   Последовательно выполните:
+   
+   ```shell
+   export CLOUDRU_KEY_ID=<Key_ID>
+   export CLOUDRU_SECRET_ID=<Key_Secret>
+   ```
+	  
+   Где `<Key_ID>` и `<Key_Secret>` — персональные ключи доступа.
 
-### Варианты заданий
+   **Способ 2**
+   
+   Откройте конфигурационный файл kubeconfig и заполните значения для `CLOUDRU_KEY_ID` и `CLOUDRU_SECRET_ID`.
+   
+   ```yaml  
+   env:
+    - name: CLOUDRU_KEY_ID
+      value: "<Key_ID>"
+    - name: CLOUDRU_SECRET_ID
+      value: "<Key_Secret>"
+   ```
+	  
+   Где `<Key_ID>` и `<Key_Secret>` — персональные ключи доступа.
 
-Распределение вариантов заданий аналогично [ЛР #2](https://github.com/bmstu-rsoi/lab2-template).
+   Конфигурационный файл kubeconfig готов к использованию.
+	  
+1. Проверьте подключение:
+
+   ```shell
+   kubectl cluster-info
+   ``` 	  
+
+При вызове kubectl для `CLOUDRU_KEY_ID` и `CLOUDRU_SECRET_ID` будет получен токен, который кешируется в файл `$HOME/.cloudru/.token`. 
+
+## Посмотреть пользовательский токен
+
+Если требуется посметреть токен, в командной строке выполните:
+
+```shell
+cloudlogin get-token
+```
+
+
+## Конвертирование kubeconfig
+
+С помощью cloudlogin можно конвертировать ранее загруженный kubeconfig в правильный формат.
+
+В командной строке выполните:
+
+```shell
+cloudlogin convert-kubeconfig --kubeconfig <kubeconfig_path> --username <user> --iam-url <iam_url>
+```   
+
+Где:
+
+- `--kubeconfig <kubeconfig_path>` — путь к kubeconfig.
+
+  Опциональный параметр. По умолчанию — `--kubeconfig $HOME/.kube/config`.
+
+- `--username <user>` — идентификатор пользователя, для которого необходимо преобразовать kubeconfig.
+
+   Чтобы посмотреть идентификатор пользователя <user>, выполните:
+   
+   ```shell
+   kubectl config get-users
+   ```
+
+   Можно не указывать, если kubeconfig предназначен только для одного пользователя.
+
+- `--iam-url <iam_url>` — эндпоинт для получения токенов доступа.
+
+   Опциональный параметр. По умолчанию — `--iam-url https://id.cloud.ru/auth/system/openid/token`.
+
+Далее необходимо настроить kubeconfig.

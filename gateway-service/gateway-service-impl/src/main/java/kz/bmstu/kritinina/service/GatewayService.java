@@ -33,4 +33,8 @@ public interface GatewayService {
     kz.bmstu.kritinina.dto.QuotaDto getDepartmentQuotas(UUID id);
     kz.bmstu.kritinina.dto.QuotaDto updateDepartmentQuotas(UUID id, kz.bmstu.kritinina.dto.QuotaDto quotaDto);
     kz.bmstu.kritinina.dto.DepartmentStatisticsDto getDepartmentStatistics(UUID id);
+
+    kz.bmstu.kritinina.auth.dto.UserResponseDto createUser(kz.bmstu.kritinina.auth.dto.UserCreateDto dto);
+    kz.bmstu.kritinina.auth.dto.UserResponseDto getCurrentUser();
+    List<kz.bmstu.kritinina.auth.dto.UserResponseDto> getAllUsers();
 }
