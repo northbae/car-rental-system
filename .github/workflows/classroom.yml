@@ -94,25 +94,29 @@ jobs:
       - name: Clean up old conflicting resources
         run: |
           # Uninstall everything first
-          helm uninstall infrastructure --wait || true
+          helm uninstall infrastructure --no-hooks || true
           for s in cars rental payment statistics logging auth analytics gateway frontend; do
-            helm uninstall ${s}-service --wait || true
+            helm uninstall ${s}-service --no-hooks || true
           done
 
+          # Remove finalizers from services and PVCs to prevent hanging
+          kubectl get service --no-headers | awk '{print $1}' | xargs -I {} kubectl patch service {} -p '{"metadata":{"finalizers":null}}' --type=merge || true
+          kubectl get pvc --no-headers | awk '{print $1}' | xargs -I {} kubectl patch pvc {} -p '{"metadata":{"finalizers":null}}' --type=merge || true
+
           # Force delete statefulsets and deployments
-          kubectl delete statefulset --all --ignore-not-found=true
-          kubectl delete deployment --all --ignore-not-found=true
-          kubectl delete service --all --ignore-not-found=true
+          kubectl delete statefulset --all --ignore-not-found=true --wait=false
+          kubectl delete deployment --all --ignore-not-found=true --wait=false
+          kubectl delete service --all --ignore-not-found=true --wait=false
           
           # CRITICAL: Delete ALL PVCs to wipe all databases and kafka state
-          kubectl delete pvc --all --ignore-not-found=true
+          kubectl delete pvc --all --ignore-not-found=true --wait=false
           
           # Wait for resources to be gone
-          sleep 30
+          sleep 15
 
       - name: Deploy Infrastructure
         run: |
-          helm uninstall infrastructure --wait || true
+          helm uninstall infrastructure --no-hooks || true
           helm dependency build k8s-cluster/charts/infrastructure
           helm upgrade --install infrastructure k8s-cluster/charts/infrastructure \
             -f k8s-cluster/charts/infrastructure/values.yaml \
@@ -234,7 +238,7 @@ jobs:
       - name: Deploy Service
         if: steps.check.outputs.changed == 'true'
         run: |
-          helm uninstall ${{ matrix.service }}-service --wait || true
+          helm uninstall ${{ matrix.service }}-service --no-hooks || true
           
           helm upgrade --install ${{ matrix.service }}-service k8s-cluster/charts/microservice \
             -f k8s-cluster/values/${{ matrix.service }}.yaml \
