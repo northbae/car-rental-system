@@ -1,6 +1,6 @@
 global:
   image:
-    registry: docker.io
+    registry: huecker.io
     pullPolicy: Always
   storageClass: ""
 
@@ -8,7 +8,7 @@ postgresql:
   fullnameOverride: "postgres"
 
   image:
-    registry: docker.io
+    registry: huecker.io
     repository: bitnami/postgresql
     tag: "13"
 
@@ -45,7 +45,7 @@ postgresql:
 kafka:
   fullnameOverride: "kafka"
   image:
-    registry: docker.io
+    registry: huecker.io
     repository: bitnami/kafka
     tag: "3.7"
   kraft:
@@ -94,7 +94,7 @@ kafka:
 
 keycloak:
   image:
-    registry: docker.io
+    registry: huecker.io
     repository: bitnami/keycloak
     tag: "22.0.5"
   auth:
