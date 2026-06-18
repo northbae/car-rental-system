@@ -99,9 +99,8 @@ jobs:
             helm uninstall ${s}-service --no-hooks || true
           done
 
-          # Remove finalizers from services and PVCs to prevent hanging
+          # Remove finalizers from services to prevent hanging
           kubectl get service --no-headers | awk '{print $1}' | xargs -I {} kubectl patch service {} -p '{"metadata":{"finalizers":null}}' --type=merge || true
-          kubectl get pvc --no-headers | awk '{print $1}' | xargs -I {} kubectl patch pvc {} -p '{"metadata":{"finalizers":null}}' --type=merge || true
 
           # Force delete statefulsets and deployments
           kubectl delete statefulset --all --ignore-not-found=true --wait=false
