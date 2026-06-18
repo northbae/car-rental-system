@@ -96,7 +96,7 @@ keycloak:
   image:
     registry: public.ecr.aws
     repository: bitnami/keycloak
-    tag: "22"
+    tag: "22.0.5"
   auth:
     adminUser: admin
     adminPassword: admin
