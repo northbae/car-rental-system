@@ -7,47 +7,50 @@ metadata:
 data:
   car-rental-realm.json: |
     {
-      "id": "car-rental",
       "realm": "car-rental",
       "enabled": true,
-      "roles": {
-        "realm": [
-          {
-            "name": "user",
-            "description": "Regular user"
-          }
-        ]
-      },
+      "clients": [
+        {
+          "clientId": "rental-client",
+          "enabled": true,
+          "clientAuthenticatorType": "client-secret",
+          "secret": "rental-client-secret",
+          "publicClient": false,
+          "directAccessGrantsEnabled": true,
+          "standardFlowEnabled": true,
+          "serviceAccountsEnabled": false,
+          "authorizationServicesEnabled": false,
+          "redirectUris": ["*"],
+          "webOrigins": ["*"]
+        }
+      ],
       "users": [
         {
           "username": "test",
           "enabled": true,
+          "emailVerified": true,
+          "firstName": "Test",
+          "lastName": "User",
+          "email": "test@example.com",
           "credentials": [
             {
               "type": "password",
               "value": "test",
               "temporary": false
             }
-          ],
-          "realmRoles": ["user"]
-        }
-      ],
-      "clients": [
+          ]
+        },
         {
-          "clientId": "rental-client",
+          "username": "admin",
           "enabled": true,
-          "publicClient": false,
-          "secret": "my-super-secret",
-          "directAccessGrantsEnabled": true,
-          "standardFlowEnabled": true,
-          "serviceAccountsEnabled": false,
-          "authorizationServicesEnabled": false,
-          "redirectUris": ["*"],
-          "webOrigins": ["*"],
-          "protocol": "openid-connect",
-          "attributes": {
-            "access.token.lifespan": "3600"
-          }
+          "emailVerified": true,
+          "credentials": [
+            {
+              "type": "password",
+              "value": "admin",
+              "temporary": false
+            }
+          ]
         }
       ]
     }

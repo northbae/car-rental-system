@@ -108,8 +108,7 @@ jobs:
           kubectl delete deployment --all --ignore-not-found=true --wait=false
           kubectl delete service --all --ignore-not-found=true --wait=false
           
-          # CRITICAL: Delete ALL PVCs to wipe all databases and kafka state
-          kubectl delete pvc --all --ignore-not-found=true --wait=false
+          # PVCs are no longer deleted to preserve state
           
           # Wait for resources to be gone
           sleep 15
