@@ -93,24 +93,11 @@ jobs:
 
       - name: Clean up old conflicting resources
         run: |
-          # Uninstall everything first
-          helm uninstall infrastructure --no-hooks || true
+          # Uninstall Helm releases. The --wait flag ensures deletion before proceeding.
+          helm uninstall infrastructure --wait || true
           for s in cars rental payment statistics logging auth analytics gateway frontend; do
-            helm uninstall ${s}-service --no-hooks || true
+            helm uninstall ${s}-service --wait || true
           done
-
-          # Remove finalizers from services to prevent hanging
-          kubectl get service --no-headers | awk '{print $1}' | xargs -I {} kubectl patch service {} -p '{"metadata":{"finalizers":null}}' --type=merge || true
-
-          # Force delete statefulsets and deployments
-          kubectl delete statefulset --all --ignore-not-found=true --wait=false
-          kubectl delete deployment --all --ignore-not-found=true --wait=false
-          kubectl delete service --all --ignore-not-found=true --wait=false
-          
-          # PVCs are no longer deleted to preserve state
-          
-          # Wait for resources to be gone
-          sleep 15
 
       - name: Deploy Infrastructure
         run: |
