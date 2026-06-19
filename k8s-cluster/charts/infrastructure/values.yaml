@@ -135,25 +135,7 @@ keycloak:
   ingress:
     enabled: false
 
-  httpRelativePath: "/auth/"
-
-ingress-nginx:
-  controller:
-    service:
-      type: LoadBalancer
-    watchIngressWithoutClass: true
-    publishService:
-      enabled: true keycloak-realm-config
-
-  extraVolumeMounts:
-    - name: realm-config
-      mountPath: "/opt/bitnami/keycloak/data/import"
-      readOnly: true
-
-  ingress:
-    enabled: false
-
-  httpRelativePath: "/auth/"
+  httpRelativePath: "/"
 
 ingress-nginx:
   controller:
