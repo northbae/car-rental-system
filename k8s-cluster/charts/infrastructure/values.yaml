@@ -9,7 +9,7 @@ postgresql:
 
   image:
     registry: huecker.io
-    repository: bitnami/postgresql
+    repository: bitnamilegacy/postgresql
     tag: "13"
 
   auth:
@@ -46,7 +46,7 @@ kafka:
   fullnameOverride: "kafka"
   image:
     registry: huecker.io
-    repository: bitnami/kafka
+    repository: bitnamilegacy/kafka
     tag: "3.7"
   kraft:
     enabled: true
@@ -95,7 +95,7 @@ kafka:
 keycloak:
   image:
     registry: huecker.io
-    repository: bitnami/keycloak
+    repository: bitnamilegacy/keycloak
     tag: "22.0.5"
   auth:
     adminUser: admin
