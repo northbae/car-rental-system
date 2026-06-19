@@ -12,8 +12,9 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    beforeEnter: () => {
-        login() // Just redirect to Keycloak
+    beforeEnter: (to, from, next) => {
+        login() // Redirect to Keycloak
+        next(false) // Cancel Vue navigation to prevent a blank screen while redirecting
     }
   },
   {

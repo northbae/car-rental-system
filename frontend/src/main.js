@@ -24,5 +24,7 @@ initKeycloak((authenticated, keycloakInstance) => {
   
   // Mount always, so we can see public routes like /register or /login
   app.use(router)
-  app.mount('#app')
+  router.isReady().then(() => {
+    app.mount('#app')
+  })
 })
