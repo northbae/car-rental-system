@@ -135,7 +135,11 @@ keycloak:
   ingress:
     enabled: false
 
-  httpRelativePath: "/"
+  httpRelativePath: "/auth/"
+
+  extraEnvVars:
+    - name: KC_HTTP_RELATIVE_PATH
+      value: "/auth/"
 
 ingress-nginx:
   controller:

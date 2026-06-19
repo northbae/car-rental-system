@@ -37,18 +37,31 @@ public class KafkaLogAppender extends AppenderBase<ILoggingEvent> {
         props.put(ProducerConfig.LINGER_MS_CONFIG, 100);
 
         try {
-            producer = new KafkaProducer<>(props);
+            // Lazy initialization to avoid crashing Spring Boot during Logback startup
             super.start();
         } catch (Exception e) {
-            System.err.println("Failed to start KafkaProducer: " + e.getMessage());
-            // Do NOT call addError, as it causes Logback to crash Spring Boot!
+            System.err.println("Failed to start KafkaLogAppender: " + e.getMessage());
         }
     }
 
     @Override
     protected void append(ILoggingEvent event) {
-        if (!isStarted() || producer == null || event.getLoggerName().contains("org.apache.kafka") || event.getLoggerName().contains("kz.bmstu.kritinina.logging")) {
+        if (!isStarted() || event.getLoggerName().contains("org.apache.kafka") || event.getLoggerName().contains("kz.bmstu.kritinina.logging")) {
             return;
+        }
+
+        if (producer == null) {
+            try {
+                Properties props = new Properties();
+                props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+                props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+                props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+                props.put(ProducerConfig.RETRIES_CONFIG, 0);
+                props.put(ProducerConfig.LINGER_MS_CONFIG, 100);
+                producer = new KafkaProducer<>(props);
+            } catch (Exception e) {
+                return; // Fail silently if Kafka is still down
+            }
         }
 
         try {
